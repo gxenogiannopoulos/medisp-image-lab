@@ -1,17 +1,25 @@
 import base64
 from io import BytesIO
 
-from PIL import Image, UnidentifiedImageError
 from django.contrib.auth import authenticate
 from django.utils import timezone
+from PIL import Image, UnidentifiedImageError
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .models import UserProfile
-from .serializers import CurrentUserSerializer, CurrentUserUpdateSerializer, UserProfileSerializer
+from .serializers import (
+    CurrentUserSerializer,
+    CurrentUserUpdateSerializer,
+    UserProfileSerializer,
+)
 
 
 @api_view(["GET"])
@@ -80,7 +88,9 @@ def me_view(request):
         serializer = CurrentUserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    serializer = CurrentUserUpdateSerializer(request.user, data=request.data, partial=True)
+    serializer = CurrentUserUpdateSerializer(
+        request.user, data=request.data, partial=True
+    )
     serializer.is_valid(raise_exception=True)
     serializer.save()
     response_serializer = CurrentUserSerializer(request.user)

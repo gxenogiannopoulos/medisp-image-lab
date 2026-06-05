@@ -1,6 +1,13 @@
 from django.urls import path
 
-from .views import health_view, login_view, logout_view, me_view, process_image, profile_view
+from .views import (
+    health_view,
+    login_view,
+    logout_view,
+    me_view,
+    process_image,
+    profile_view,
+)
 
 urlpatterns = [
     path("health/", health_view, name="health"),

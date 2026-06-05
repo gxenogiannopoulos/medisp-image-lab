@@ -1,18 +1,19 @@
-# Day 4 - Backend Testing and Docker Basics
+# Day 4 - Backend Testing, Docker, and Developer Tooling
 
 ## Learning goals
 
 By the end of Day 4, students should be able to:
 
-- explain what backend testing is
-- run Django API tests with `manage.py test`
-- understand what `APITestCase` gives us in DRF
-- use coverage to see tested vs untested code
-- run this full project with Docker Compose
+- explain backend API testing basics
+- run Django tests and coverage
+- explain what pre-commit is and why teams use it
+- explain code formatting and linting
+- run this project with Docker Compose
+- use a Makefile to automate common commands
 
 ## What is testing?
 
-Testing is writing small checks that verify our code behaves as expected.
+Testing means writing small checks that verify code behavior.
 
 In backend APIs, tests help us confirm:
 
@@ -21,62 +22,38 @@ In backend APIs, tests help us confirm:
 - user updates save the right fields
 - API responses stay stable as the project grows
 
-This helps us change code safely without breaking old features.
-
 ## Why backend testing matters
 
-Frontend bugs are visible quickly. Backend bugs can be hidden until real users hit them.
-
-Backend tests give confidence for:
-
-- authentication and permissions
-- data correctness
-- regression protection ("it used to work")
+Backend bugs can be hard to spot manually. Tests give us confidence when we refactor.
 
 ## DRF testing with `APITestCase`
 
-`APITestCase` is a Django REST Framework test class that gives us:
+`APITestCase` gives us:
 
-- an isolated test database per test run
-- an API-friendly test client
-- easy JSON requests and response assertions
+- an isolated test database
+- an API-friendly client
+- easy JSON request/response assertions
 
 In this project we also use:
 
 - `APIClient` for token-auth request flows
-- `force_authenticate` to quickly test protected endpoints
-
-## What we test in Day 4
-
-- login success and failure
-- unauthorized access to `/api/me/` and `/api/profile/`
-- authenticated reads from `/api/me/` and `/api/profile/`
-- updating `first_name` and `last_name`
-- ensuring read-only fields are not changed by `/api/me/`
-- health check response from `/api/health/`
+- `force_authenticate` for focused authenticated tests
 
 ## Run backend tests
 
-From the `backend/` folder:
+From `backend/`:
 
 ```bash
 python manage.py test
-```
-
-Coverage:
-
-```bash
-coverage run manage.py test
+coverage run manage.py tes
 coverage report
 ```
 
 ## Health check endpoint
 
-A simple endpoint is available for quick API checks:
-
 - `GET /api/health/`
 
-Expected JSON:
+Expected response:
 
 ```json
 {
@@ -86,54 +63,128 @@ Expected JSON:
 
 ## What is Docker?
 
-Docker packages an app and its dependencies into a container.
+Docker packages code and dependencies into containers so everyone runs the same environment.
 
-This means all students can run the same environment, even on different machines.
+If you are on a fresh Ubuntu installation, Docker is probably not installed yet. Before you can run this project with Docker Compose, install Docker Engine and the Compose plugin first.
+
+### Install Docker on Ubuntu
+
+Use the seminar-friendly Ubuntu package install instead of Docker's official repository setup:
+
+```bash
+sudo apt update
+sudo apt install docker.io docker-compose-v2
+sudo usermod -aG docker $USER
+```
+
+After that, restart your computer, so the new group membership takes effect.
+
+Verify the installation:
+
+```bash
+docker --version
+docker compose version
+docker run hello-world
+```
 
 ## Why Docker helps developers
 
-- fewer "works on my machine" issues
-- faster onboarding
-- reproducible local setup
+- fewer machine-specific setup issues
+- easier onboarding
+- repeatable local development
 
 ## Run this project with Docker Compose
 
-From the project root:
+After Docker is installed, run these commands from the project root:
 
 ```bash
 docker compose up --build
-```
-
-Services:
-
-- `backend` on port `8000`
-- `frontend` on port `3000`
-
-Stop containers:
-
-```bash
 docker compose down
-```
-
-## Useful debugging commands
-
-```bash
 docker compose logs backend
 docker compose logs frontend
 ```
 
-For local non-Docker development, tests still run the same way:
+## What is pre-commit?
+
+`pre-commit` runs automated checks before commits.
+
+For this workshop, we keep `pre-commit` on the **host machine** in the backend Python virtualenv, not inside Docker, so students can run the hooks directly in their local git checkout.
+
+In this project it runs:
+
+- `black` for formatting Python code
+- `isort` for sorting imports
+- `flake8` for lint checks
+
+Install the backend dependencies — this also installs `pre-commit` because it is pinned in `backend/requirements.txt`:
 
 ```bash
 cd backend
-python manage.py test
-coverage run manage.py test
-coverage report
+pip install -r requirements.txt
 ```
+
+Install hooks once:
+
+```bash
+pre-commit install
+```
+
+Run checks manually on all files:
+
+```bash
+pre-commit run --all-files
+```
+
+## Why teams use automated checks
+
+- consistent style across contributors
+- fewer small review comments
+- catches simple issues early
+
+## Code formatting vs linting
+
+- Formatting (`black`, `isort`): changes code style automatically.
+- Linting (`flake8`): reports potential quality/style issues.
+
+## What is a Makefile?
+
+A Makefile is a small command launcher. It helps avoid memorizing long commands.
+
+## Why automate repetitive commands
+
+- faster daily workflow
+- fewer command mistakes
+- easier onboarding for new students
+
+## Make commands in this project
+
+From the project root:
+
+```bash
+make setup
+make build
+make run
+make down
+make test
+make lint
+make logs-backend
+make logs-frontend
+```
+
+What each command does:
+
+- `make setup`: creates backend virtualenv, installs backend/frontend dependencies, installs git hooks.
+- `make build`: builds Docker images.
+- `make run`: starts backend + frontend with Docker Compose.
+- `make down`: stops Docker Compose services.
+- `make test`: runs Django tests locally from backend virtualenv.
+- `make lint`: runs `pre-commit` checks on all files.
+- `make logs-backend`: shows backend container logs.
+- `make logs-frontend`: shows frontend container logs.
 
 ## Homework (research only)
 
-Do not implement these yet. Research the concepts:
+Do not implement these yet. Research these concepts:
 
 - file upload
 - media storage
@@ -142,10 +193,8 @@ Do not implement these yet. Research the concepts:
 - Redis
 - polling from frontend
 
-Think about where these could fit in future versions of this app.
-
 ## Assumptions used in Day 4
 
 - SQLite remains the database for this lesson.
-- We keep Django and React in development mode for clarity.
 - Docker setup is intentionally minimal for teaching.
+- Tooling is focused on developer workflow, not production deployment.

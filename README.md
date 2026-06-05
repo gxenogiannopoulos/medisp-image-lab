@@ -1,6 +1,6 @@
 # medisp-image-lab
 
-Day 3 training app: a beginner-friendly Django + React project that combines image processing with authentication and personalized user settings.
+Training app: a beginner-friendly Django + React project that combines image processing with authentication, user settings, testing, and local developer tooling.
 
 ## What this app does
 
@@ -16,19 +16,18 @@ Day 3 training app: a beginner-friendly Django + React project that combines ima
 ## Tech stack
 
 - Backend: Django, Django REST Framework, DRF Token Auth, Pillow
-- Frontend: React (CRA), local CSS styling (no UI library)
+- Frontend: React (CRA), local CSS styling
 - Database: SQLite (default)
 
 ## Project structure
 
 - `backend/`: Django + DRF API
 - `frontend/`: React app
-- `Day_3.md`: detailed lesson notes for Day 3
-- `Day_4.md`: backend testing and Dockerizing lesson notes
+- `Day_4.md`: Day 4 lesson notes (testing, Docker, pre-commit, Makefile)
 
 ## API endpoints
 
-- `GET /api/health/` -> simple health check (`{"status": "ok"}`)
+- `GET /api/health/` -> `{"status": "ok"}`
 - `POST /api/login/` -> returns auth token
 - `POST /api/logout/` -> invalidates current token
 - `GET /api/me/` -> current authenticated user
@@ -37,89 +36,73 @@ Day 3 training app: a beginner-friendly Django + React project that combines ima
 - `PATCH /api/profile/` -> updates `theme` and `font_size`
 - `POST /api/process-image/` -> grayscale conversion
 
-Example process-image response:
-
-```json
-{
-  "image": "<base64_string>"
-}
-```
-
-## One-time setup
+## One-time local setup
 
 ### Backend
 
 ```bash
 cd backend
-python3 -m venv .venv
-source .venv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
-python manage.py createsuperuser
+pre-commit install
 ```
 
-### Frontend
+Use the existing backend environment from the earlier lessons. For example, if you need to activate it manually, use `source ~/.venvs/medisp-image-lab/bin/activate`.
 
-In a second terminal:
+`pre-commit` is installed as part of `backend/requirements.txt`, so a fresh machine just needs the existing virtualenv + `pip install -r requirements.txt` step before installing the hooks.
+
+For this project, `pre-commit` runs on the host machine in the backend environment, not inside Docker.
+
+### Frontend
 
 ```bash
 cd frontend
 npm install
 ```
 
-## Run the app locally
+## Run locally (without Docker)
 
-### 1) Start backend
+### Backend
 
 ```bash
 cd backend
-source .venv/bin/activate
 python manage.py runserver
 ```
 
-### 2) Start frontend
-
-In a second terminal:
+### Frontend
 
 ```bash
 cd frontend
 npm start
 ```
 
-## Run with Docker Compose (Day 4)
+## Day 4 additions
+
+Day 4 now includes:
+
+- backend testing
+- Docker setup
+- pre-commit hooks (`black`, `isort`, `flake8`)
+- Makefile automation
+
+See [Day_4.md](./Day_4.md).
+
+## Useful commands
 
 ```bash
+python manage.py test
+coverage run manage.py test
+coverage report
+pre-commit install
+pre-commit run --all-files
 docker compose up --build
-```
-
-- Frontend: `http://localhost:3000`
-- Backend API: `http://localhost:8000`
-
-Stop services:
-
-```bash
 docker compose down
+make
+make install
+make build
+make run
+make test
+make lint
 ```
 
-## Day 4 focus: Testing + Docker
-
-See [Day_4.md](./Day_4.md) for:
-
-- backend API tests with DRF `APITestCase`
-- coverage commands
-- Docker development setup and debugging commands
-
-## Browser flow (Day 3)
-
-1. Login with your user.
-2. Use top-right icon toggles to change theme/font size (auto-save).
-3. Open **User Settings**.
-4. If a name exists, click it to edit first/last name.
-5. Upload image and click **Process Image**.
-6. Confirm grayscale output appears in the processed panel.
-
-## Notes
-
-- User updates are scoped to `request.user` for safety.
-- `username`, `email`, and `last_login` are read-only from frontend.
-- Local frontend API proxy target can be configured with `PROXY_TARGET`.
+`make` shows the available targets. `make install` installs backend dependencies, installs the frontend packages, and sets up the `pre-commit` hooks using the existing backend environment.

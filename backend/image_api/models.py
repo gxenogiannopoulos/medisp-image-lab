@@ -21,7 +21,9 @@ class UserProfile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     theme = models.CharField(max_length=10, choices=THEME_CHOICES, default=THEME_LIGHT)
-    font_size = models.CharField(max_length=10, choices=FONT_SIZE_CHOICES, default=FONT_MEDIUM)
+    font_size = models.CharField(
+        max_length=10, choices=FONT_SIZE_CHOICES, default=FONT_MEDIUM
+    )
 
     def __str__(self):
         return f"Profile for {self.user.username}"

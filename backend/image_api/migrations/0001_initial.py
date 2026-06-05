@@ -1,6 +1,6 @@
+import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
-import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -15,12 +15,31 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="UserProfile",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("theme", models.CharField(choices=[("light", "Light"), ("dark", "Dark")], default="light", max_length=10)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "theme",
+                    models.CharField(
+                        choices=[("light", "Light"), ("dark", "Dark")],
+                        default="light",
+                        max_length=10,
+                    ),
+                ),
                 (
                     "font_size",
                     models.CharField(
-                        choices=[("small", "Small"), ("medium", "Medium"), ("large", "Large")],
+                        choices=[
+                            ("small", "Small"),
+                            ("medium", "Medium"),
+                            ("large", "Large"),
+                        ],
                         default="medium",
                         max_length=10,
                     ),

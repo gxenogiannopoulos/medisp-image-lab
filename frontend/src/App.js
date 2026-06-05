@@ -265,7 +265,7 @@ function App() {
     return (
       <main className="login-page">
         <section className="login-card">
-          <h1>Day 3 Login</h1>
+          <h1>Day 4 Login</h1>
           <p>Sign in to access your personalized image lab settings.</p>
           <form onSubmit={handleLogin} className="stack-form">
             <input
@@ -301,7 +301,7 @@ function App() {
     >
       <div className="app-inner">
         <header className="topbar">
-          <h1>Day 3 Image Processing Lab</h1>
+          <h1>Day 4 Image Processing Lab</h1>
           <div className="topbar-actions">
             <button
               type="button"
